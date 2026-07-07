@@ -16,7 +16,7 @@ async function fetchBPReadings() {
     .from("bp_readings")
     .select("*")
     .order("measured_at", { ascending: false });
-  if (error) { showToast("تعذّر تحميل قراءات الضغط", "error"); return; }
+if (error) { reportSupabaseError("تعذّر تحميل قراءات الضغط", error); return; }
   bpReadings = data || [];
 }
 
@@ -25,7 +25,7 @@ async function fetchSugarReadings() {
     .from("sugar_readings")
     .select("*")
     .order("measured_at", { ascending: false });
-  if (error) { showToast("تعذّر تحميل قراءات السكر", "error"); return; }
+if (error) { reportSupabaseError("تعذّر تحميل قراءات السكر", error); return; }
   sugarReadings = data || [];
 }
 
@@ -42,7 +42,7 @@ async function addBPReading({ systolic, diastolic, pulse, note, measured_at }) {
     measured_at: measured_at ? new Date(measured_at).toISOString() : new Date().toISOString()
   };
   const { data, error } = await supabaseClient.from("bp_readings").insert(payload).select().single();
-  if (error) { showToast("تعذّرت إضافة القراءة", "error"); return null; }
+if (error) { reportSupabaseError("تعذّرت إضافة قراءة الضغط", error); return null; }
   bpReadings.unshift(data);
   sortBP();
   return data;
@@ -59,7 +59,7 @@ async function updateBPReading(id, { systolic, diastolic, pulse, note, measured_
     measured_at: measured_at ? new Date(measured_at).toISOString() : undefined
   };
   const { data, error } = await supabaseClient.from("bp_readings").update(payload).eq("id", id).select().single();
-  if (error) { showToast("تعذّر تعديل القراءة", "error"); return null; }
+  if (error) { reportSupabaseError("تعذّر تعديل قراءة الضغط", error); return null; }
   const idx = bpReadings.findIndex(r => r.id === id);
   if (idx > -1) bpReadings[idx] = data;
   sortBP();
@@ -68,7 +68,7 @@ async function updateBPReading(id, { systolic, diastolic, pulse, note, measured_
 
 async function deleteBPReading(id) {
   const { error } = await supabaseClient.from("bp_readings").delete().eq("id", id);
-  if (error) { showToast("تعذّر حذف القراءة", "error"); return false; }
+  if (error) { reportSupabaseError("تعذّر حذف قراءة الضغط", error); return false;}
   bpReadings = bpReadings.filter(r => r.id !== id);
   return true;
 }
@@ -85,7 +85,7 @@ async function addSugarReading({ value, reading_type, note, measured_at }) {
     measured_at: measured_at ? new Date(measured_at).toISOString() : new Date().toISOString()
   };
   const { data, error } = await supabaseClient.from("sugar_readings").insert(payload).select().single();
-  if (error) { showToast("تعذّرت إضافة القراءة", "error"); return null; }
+  if (error) { reportSupabaseError("تعذّرت إضافة قراءة السكر", error); return null; }
   sugarReadings.unshift(data);
   sortSugar();
   return data;
@@ -101,7 +101,7 @@ async function updateSugarReading(id, { value, reading_type, note, measured_at }
     measured_at: measured_at ? new Date(measured_at).toISOString() : undefined
   };
   const { data, error } = await supabaseClient.from("sugar_readings").update(payload).eq("id", id).select().single();
-  if (error) { showToast("تعذّر تعديل القراءة", "error"); return null; }
+  if (error) { reportSupabaseError("تعذّر تعديل قراءة السكر", error); return null; }
   const idx = sugarReadings.findIndex(r => r.id === id);
   if (idx > -1) sugarReadings[idx] = data;
   sortSugar();
@@ -110,7 +110,7 @@ async function updateSugarReading(id, { value, reading_type, note, measured_at }
 
 async function deleteSugarReading(id) {
   const { error } = await supabaseClient.from("sugar_readings").delete().eq("id", id);
-  if (error) { showToast("تعذّر حذف القراءة", "error"); return false; }
+  if (error) { reportSupabaseError("تعذّر حذف قراءة السكر", error); return false; }
   sugarReadings = sugarReadings.filter(r => r.id !== id);
   return true;
 }
