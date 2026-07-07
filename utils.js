@@ -107,6 +107,13 @@ function toDatetimeLocalValue(iso) {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
+/* ---------------- عرض أخطاء Supabase بتفاصيلها الحقيقية ---------------- */
+function reportSupabaseError(actionLabel, error) {
+  console.error(actionLabel, error);
+  const detail = error?.message || "خطأ غير معروف";
+  showToast(`${actionLabel}: ${detail}`, "error");
+}
+
 /* ---------------- توست إشعارات ---------------- */
 function showToast(message, type = "default") {
   const wrap = document.getElementById("toastWrap");
